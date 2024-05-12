@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,6 +60,18 @@ public class ClientController {
             updateClient.setZonaHorariaLocal(client.getZonaHorariaLocal()); // Aquí se asigna la zona horaria directamente como una cadena de texto
             clientRepository.save(updateClient);
             return "Cliente editado correctamente";
+        } else {
+            return "No se encontró ningún cliente con el ID especificado";
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public String delete(@PathVariable long id){
+        Optional<Client> optionalClient = clientRepository.findById(id);
+        if (optionalClient.isPresent()) {
+            Client deleteClient = optionalClient.get();
+            clientRepository.delete(deleteClient);
+            return "Cliente eliminado correctamente";
         } else {
             return "No se encontró ningún cliente con el ID especificado";
         }
