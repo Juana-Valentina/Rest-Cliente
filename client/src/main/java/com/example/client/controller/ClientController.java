@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,5 +33,14 @@ public class ClientController {
         return clientRepository.findAll();
     }
     
+    @PostMapping("/grabar")
+    public String saveClient(@RequestBody Client client) {
+        if (client != null) {
+            clientRepository.save(client);
+            return "Cliente guardado correctamente";
+        } else {
+            return "Error: No se proporcionó un cliente válido";
+        }
+    }
     
 }
