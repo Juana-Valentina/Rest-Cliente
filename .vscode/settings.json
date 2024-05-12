@@ -1,0 +1,23 @@
+{
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.debug.settings.onBuildFailureProceed": true,
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "Clientes_DB_Connection",
+            "database": "clientes_db",
+            "username": "root",
+            "password": ""
+        }
+    ],
+    "cSpell.words": [
+        "cliente"
+    ]
+}
