@@ -1,81 +1,91 @@
 package com.example.client.controller;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.client.model.Client;
-import com.example.client.repository.ClientRepository;
-
-
+import com.example.client.service.ClientService;
 
 
 @RestController
 @RequestMapping("/api/cliente")
 
 public class ClientController {
+    
+    private final ClientService clientService;
 
-    @Autowired
-    private ClientRepository clientRepository;
-
-    @GetMapping()
-    public String index() {
-        return "CONECTADO";
+    public ClientController(ClientService clientService) {
+        this.clientService = clientService;
     }
 
-    @GetMapping("/all")
-    public List<Client> getAllClients() {
-        return clientRepository.findAll();
+
+    @GetMapping
+    public String verificarConexion() {
+        return "¡Servidor conectado!";
+    }
+
+    @GetMapping("/listado")
+    public List<Client> obtenerTodosLosClientes() {
+        return clientService.getClient();
     }
     
-    @PostMapping("/grabar")
-    public String saveClient(@RequestBody Client client) {
-        if (client != null) {
-            clientRepository.save(client);
-            return "Cliente guardado correctamente";
-        } else {
-            return "Error: No se proporcionó un cliente válido";
+    @PostMapping("/guardar")
+    public ResponseEntity<String> crearCliente(
+        @RequestParam String nombreCompleto,
+        @RequestParam long documentoIdentidad,
+        @RequestParam String correoElectronico,
+        @RequestParam LocalDate fechaNacimiento,
+        @RequestParam String zonaHorariaLocal
+        ) {
+            Client client = new Client();
+            client.setNombreCompleto(nombreCompleto);
+            client.setDocumentoIdentidad(documentoIdentidad);
+            client.setCorreoElectronico(correoElectronico);
+            client.setFechaNacimiento(fechaNacimiento);
+            client.setZonaHorariaLocal(zonaHorariaLocal);
+            
+            clientService.save(client);
+            return ResponseEntity.ok("Cliente guardado correctamente");
         }
-    }
 
     @PutMapping("/editar/{id}")
-    public String update(@PathVariable long id, @RequestBody Client client) {
-        Optional<Client> optionalClient = clientRepository.findById(id);
-        
-        if (optionalClient.isPresent()) {
-            Client updateClient = optionalClient.get();
-            updateClient.setNombreCompleto(client.getNombreCompleto());
-            updateClient.setDocumentoIdentidad(client.getDocumentoIdentidad());
-            updateClient.setCorreoElectronico(client.getCorreoElectronico());
-            updateClient.setFechaNacimiento(client.getFechaNacimiento());
-            updateClient.setZonaHorariaLocal(client.getZonaHorariaLocal()); // Aquí se asigna la zona horaria directamente como una cadena de texto
-            clientRepository.save(updateClient);
-            return "Cliente editado correctamente";
-        } else {
-            return "No se encontró ningún cliente con el ID especificado";
+    public ResponseEntity<String> actualizarCliente(
+        @PathVariable long id,
+        @RequestParam String nombreCompleto,
+        @RequestParam long documentoIdentidad,
+        @RequestParam String correoElectronico,
+        @RequestParam LocalDate fechaNacimiento,
+        @RequestParam String zonaHorariaLocal
+        ) {
+            Client client = new Client();
+            client.setNombreCompleto(nombreCompleto);
+            client.setDocumentoIdentidad(documentoIdentidad);
+            client.setCorreoElectronico(correoElectronico);
+            client.setFechaNacimiento(fechaNacimiento);
+            client.setZonaHorariaLocal(zonaHorariaLocal);
+            
+            Client clienteActualizado = clientService.update(id, client);
+            if (clienteActualizado != null) {
+                return ResponseEntity.ok("Cliente actualizado correctamente");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró ningún cliente con el ID especificado");
+            }
         }
-    }
 
     @DeleteMapping("/delete/{id}")
-    public String delete(@PathVariable long id){
-        Optional<Client> optionalClient = clientRepository.findById(id);
-        if (optionalClient.isPresent()) {
-            Client deleteClient = optionalClient.get();
-            clientRepository.delete(deleteClient);
-            return "Cliente eliminado correctamente";
-        } else {
-            return "No se encontró ningún cliente con el ID especificado";
-        }
-    }
-
-    
+    public ResponseEntity<String> eliminarCliente(@PathVariable long id) {
+        clientService.delete(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Cliente eliminado correctamente");
+    } 
 }
