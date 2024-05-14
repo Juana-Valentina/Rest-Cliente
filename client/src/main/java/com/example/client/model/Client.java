@@ -1,16 +1,23 @@
 package com.example.client.model;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+// @Data
+// @AllArgsConstructor
+// @NoArgsConstructor
+@Table(name = "cliente")
+
 public class Client {
 
     @Id
@@ -18,34 +25,58 @@ public class Client {
 
     @Getter
     @Setter
+    @Column(name = "id")
 
     private long id;
 
-    @Column
+    @Column(name = "nombre_completo")
     @Getter
     @Setter
     private String nombreCompleto;
 
-    @Column
+    @Column(name = "documento_identidad")
     @Getter
     @Setter
     private long documentoIdentidad;
 
-    @Column
+    @Column(name = "correo_electronico")
     @Getter
     @Setter
     private String correoElectronico;
 
-    @Column
+    @Column(name = "fecha_nacimiento")
     @Getter
     @Setter
     private LocalDate fechaNacimiento;
 
-    @Column
+    @Column(name = "zona_horaria_local")
     @Getter
     @Setter
     private String zonaHorariaLocal;
 
+    public Client() {}
 
+    public Client(long id, String nombreCompleto, long documentoIdentidad, String correoElectronico, LocalDate fechaNacimiento, String zonaHorariaLocal) {
+        this.id = id;
+        this.nombreCompleto = nombreCompleto;
+        this.documentoIdentidad = documentoIdentidad;
+        this.correoElectronico = correoElectronico;
+        this.fechaNacimiento = fechaNacimiento;
+        this.zonaHorariaLocal = zonaHorariaLocal;
+    }
+
+    public int getEdad() {
+        LocalDate fechaActual = LocalDate.now();
+        Period periodo = Period.between(this.fechaNacimiento, fechaActual);
+        return periodo.getYears();
+    }
 
 }
+
+// public long getId() {
+//     return id;
+// }
+
+// public void setId(long id) {
+//     this.id = id;
+// }
