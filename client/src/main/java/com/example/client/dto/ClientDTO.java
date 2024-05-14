@@ -15,9 +15,10 @@ public class ClientDTO {
     @Getter @Setter private String correoElectronico;
     @Getter @Setter private LocalDateTime fechaNacimiento;
 
+    /** Constructor sin parámetros. Necesario para la deserialización. */
     public ClientDTO() {}
 
-    // Constructor con todos los argumentos
+    /** Constructor con parámetros para inicializar el DTO con todos sus atributos. */
     public ClientDTO(String nombreCompleto, String documentoIdentidad, String correoElectronico, LocalDateTime fechaNacimiento) {
         this.nombreCompleto = nombreCompleto;
         this.documentoIdentidad = documentoIdentidad;

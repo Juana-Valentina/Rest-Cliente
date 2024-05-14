@@ -1,9 +1,9 @@
 package com.example.client.controller;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.client.model.Client;
@@ -26,34 +26,38 @@ public class ClientController {
     
     private final ClientService clientService;
 
+    /** Constructor para inyectar el servicio de cliente. */
     public ClientController(ClientService clientService) {
         this.clientService = clientService;
     }
 
-
+    /** Verifica la conexión con el servidor. */
     @GetMapping
     public String verificarConexion() {
         return "¡Servidor conectado!";
     }
 
+    /** Obtiene una lista de todos los clientes. */
     @GetMapping("/listado")
     public List<Client> obtenerTodosLosClientes() {
         return clientService.getClient();
     }
     
+    /** Obtiene una lista de clientes ordenados por nombre completo en orden ascendente. */
     @GetMapping("/listado-ordenado")
     public ResponseEntity<List<Client>> obtenerTodosLosClientesOrdenados() {
         List<Client> clientes = clientService.getClientesOrdenadosPorNombre();
         return new ResponseEntity<>(clientes, HttpStatus.OK);
     }
 
-    
+    /** Obtiene una lista de clientes ordenados por edad en orden ascendente. */
     @GetMapping("/listado-ordenado-por-edad")
     public ResponseEntity<List<Client>> obtenerClientesOrdenadosPorEdad() {
         List<Client> clientesOrdenadosPorEdad = clientService.obtenerClientesOrdenadosPorEdad();
         return new ResponseEntity<>(clientesOrdenadosPorEdad, HttpStatus.OK);
     }
 
+    /** Obtiene estadísticas sobre los clientes, como la cantidad total y el promedio de edad. */
     @GetMapping("/Cantidad-promedio")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasClientes() {
         Map<String, Object> estadisticas = new HashMap<>();
@@ -63,49 +67,41 @@ public class ClientController {
         return ResponseEntity.ok(estadisticas);
     }
     
+    /** Crea un nuevo cliente con los datos proporcionados. */
     @PostMapping("/guardar")
-    public ResponseEntity<String> crearCliente(
-        @RequestParam String nombreCompleto,
-        @RequestParam long documentoIdentidad,
-        @RequestParam String correoElectronico,
-        @RequestParam LocalDate fechaNacimiento,
-        @RequestParam String zonaHorariaLocal
-        ) {
-            Client client = new Client();
-            client.setNombreCompleto(nombreCompleto);
-            client.setDocumentoIdentidad(documentoIdentidad);
-            client.setCorreoElectronico(correoElectronico);
-            client.setFechaNacimiento(fechaNacimiento);
-            client.setZonaHorariaLocal(zonaHorariaLocal);
-            
-            clientService.save(client);
-            return ResponseEntity.ok("Cliente guardado correctamente");
-        }
-
-    @PutMapping("/editar/{id}")
-    public ResponseEntity<String> actualizarCliente(
-        @PathVariable long id,
-        @RequestParam String nombreCompleto,
-        @RequestParam long documentoIdentidad,
-        @RequestParam String correoElectronico,
-        @RequestParam LocalDate fechaNacimiento,
-        @RequestParam String zonaHorariaLocal
-        ) {
-            Client client = new Client();
-            client.setNombreCompleto(nombreCompleto);
-            client.setDocumentoIdentidad(documentoIdentidad);
-            client.setCorreoElectronico(correoElectronico);
-            client.setFechaNacimiento(fechaNacimiento);
-            client.setZonaHorariaLocal(zonaHorariaLocal);
-            
-            Client clienteActualizado = clientService.update(id, client);
-            if (clienteActualizado != null) {
-                return ResponseEntity.ok("Cliente actualizado correctamente");
+    public ResponseEntity<String> crearCliente(@RequestBody Client cliente) {
+        if (cliente != null) {
+            Client clienteGuardado = clientService.save(cliente);
+            if (clienteGuardado != null) {
+                return new ResponseEntity<>("Cliente creado exitosamente", HttpStatus.CREATED);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró ningún cliente con el ID especificado");
+                return new ResponseEntity<>("Error al guardar el cliente", HttpStatus.INTERNAL_SERVER_ERROR);
             }
+        } else {
+            return new ResponseEntity<>("El objeto cliente es nulo", HttpStatus.BAD_REQUEST);
         }
+    }
 
+    /** Actualiza un cliente existente con los datos proporcionados. */
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<String> actualizarCliente(@PathVariable Long id, @RequestBody Client clienteActualizado) {
+        Optional<Client> optionalClient = clientService.getById(id);
+        if (optionalClient.isPresent()) {
+            Client clientEncontrado = optionalClient.get();
+            clientEncontrado.setNombreCompleto(clienteActualizado.getNombreCompleto());
+            clientEncontrado.setDocumentoIdentidad(clienteActualizado.getDocumentoIdentidad());
+            clientEncontrado.setCorreoElectronico(clienteActualizado.getCorreoElectronico());
+            clientEncontrado.setFechaNacimiento(clienteActualizado.getFechaNacimiento());
+            clientEncontrado.setZonaHorariaLocal(clienteActualizado.getZonaHorariaLocal());
+
+            clientService.update(clientEncontrado);
+            return new ResponseEntity<>("Cliente actualizado exitosamente", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Cliente no encontrado", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /** Elimina un cliente por su ID. */
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> eliminarCliente(@PathVariable long id) {
         clientService.delete(id);

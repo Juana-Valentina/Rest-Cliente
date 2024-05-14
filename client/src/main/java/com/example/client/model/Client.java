@@ -54,10 +54,11 @@ public class Client {
     @Setter
     private String zonaHorariaLocal;
 
+    /** Constructor sin parámetros. Necesario para JPA. */
     public Client() {}
 
-    public Client(long id, String nombreCompleto, long documentoIdentidad, String correoElectronico, LocalDate fechaNacimiento, String zonaHorariaLocal) {
-        this.id = id;
+    /** Constructor con parámetros para inicializar un cliente con todos sus atributos. */
+    public Client(String nombreCompleto, long documentoIdentidad, String correoElectronico, LocalDate fechaNacimiento, String zonaHorariaLocal) {
         this.nombreCompleto = nombreCompleto;
         this.documentoIdentidad = documentoIdentidad;
         this.correoElectronico = correoElectronico;
@@ -65,7 +66,7 @@ public class Client {
         this.zonaHorariaLocal = zonaHorariaLocal;
     }
 
- 
+    /** Calcula la edad del cliente basado en su fecha de nacimiento. */
     public int getEdad() {
         LocalDate fechaActual = LocalDate.now();
         Period periodo = Period.between(this.fechaNacimiento, fechaActual);
@@ -74,10 +75,3 @@ public class Client {
 
 }
 
-// public long getId() {
-//     return id;
-// }
-
-// public void setId(long id) {
-//     this.id = id;
-// }
