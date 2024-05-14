@@ -2,17 +2,13 @@ package com.example.client.service;
 
 import java.util.List;
 import java.util.Optional;
-<<<<<<< HEAD
-=======
 import java.util.stream.Collectors;
->>>>>>> clientes-promedio
 
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Sort;
 
 import com.example.client.model.Client;
 import com.example.client.repository.ClientRepository;
-
 
 @Service
 
@@ -60,9 +56,6 @@ public class ClientService {
         return this.clientRepository.findAll(Sort.by(Sort.Direction.ASC, "nombreCompleto"));
     }
 
-<<<<<<< HEAD
-    
-=======
     public List<Client> obtenerClientesOrdenadosPorEdad() {
         List<Client> clientes = getClient();
         return clientes.stream()
@@ -77,6 +70,5 @@ public class ClientService {
                 .sum();
         return (double) totalEdad / clientes.size();
     }
->>>>>>> clientes-promedio
 
 }

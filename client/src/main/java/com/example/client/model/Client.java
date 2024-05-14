@@ -65,15 +65,12 @@ public class Client {
         this.zonaHorariaLocal = zonaHorariaLocal;
     }
 
-<<<<<<< HEAD
  
-=======
     public int getEdad() {
         LocalDate fechaActual = LocalDate.now();
         Period periodo = Period.between(this.fechaNacimiento, fechaActual);
         return periodo.getYears();
     }
->>>>>>> clientes-promedio
 
 }
 

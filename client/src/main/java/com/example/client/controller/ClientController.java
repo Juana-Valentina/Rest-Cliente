@@ -1,13 +1,9 @@
 package com.example.client.controller;
 
 import java.time.LocalDate;
-<<<<<<< HEAD
-import java.util.List;
-=======
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
->>>>>>> clientes-promedio
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.client.model.Client;
 import com.example.client.service.ClientService;
-
 
 @RestController
 @RequestMapping("/api/cliente")
@@ -52,9 +47,7 @@ public class ClientController {
         return new ResponseEntity<>(clientes, HttpStatus.OK);
     }
 
-<<<<<<< HEAD
     
-=======
     @GetMapping("/listado-ordenado-por-edad")
     public ResponseEntity<List<Client>> obtenerClientesOrdenadosPorEdad() {
         List<Client> clientesOrdenadosPorEdad = clientService.obtenerClientesOrdenadosPorEdad();
@@ -69,7 +62,6 @@ public class ClientController {
         estadisticas.put("promedioEdad", clientService.calcularPromedioEdad());
         return ResponseEntity.ok(estadisticas);
     }
->>>>>>> clientes-promedio
     
     @PostMapping("/guardar")
     public ResponseEntity<String> crearCliente(
