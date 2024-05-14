@@ -64,6 +64,8 @@ public class Client {
         this.zonaHorariaLocal = zonaHorariaLocal;
     }
 
+ 
+
 }
 
 // public long getId() {

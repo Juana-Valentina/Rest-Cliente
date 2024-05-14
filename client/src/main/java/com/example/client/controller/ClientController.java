@@ -40,6 +40,14 @@ public class ClientController {
         return clientService.getClient();
     }
     
+    @GetMapping("/listado-ordenado")
+    public ResponseEntity<List<Client>> obtenerTodosLosClientesOrdenados() {
+        List<Client> clientes = clientService.getClientesOrdenadosPorNombre();
+        return new ResponseEntity<>(clientes, HttpStatus.OK);
+    }
+
+    
+    
     @PostMapping("/guardar")
     public ResponseEntity<String> crearCliente(
         @RequestParam String nombreCompleto,
@@ -88,4 +96,6 @@ public class ClientController {
         clientService.delete(id);
         return ResponseEntity.status(HttpStatus.OK).body("Cliente eliminado correctamente");
     } 
+
+    
 }

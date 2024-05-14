@@ -3,6 +3,7 @@ package com.example.client.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.client.model.Client;
@@ -51,5 +52,10 @@ public class ClientService {
         this.clientRepository.deleteById(id);
     }
 
+    public List<Client> getClientesOrdenadosPorNombre() {
+        return this.clientRepository.findAll(Sort.by(Sort.Direction.ASC, "nombreCompleto"));
+    }
+
+    
 
 }
