@@ -1,7 +1,9 @@
 package com.example.client.controller;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +52,15 @@ public class ClientController {
     public ResponseEntity<List<Client>> obtenerClientesOrdenadosPorEdad() {
         List<Client> clientesOrdenadosPorEdad = clientService.obtenerClientesOrdenadosPorEdad();
         return new ResponseEntity<>(clientesOrdenadosPorEdad, HttpStatus.OK);
+    }
+
+    @GetMapping("/Cantidad-promedio")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasClientes() {
+        Map<String, Object> estadisticas = new HashMap<>();
+        List<Client> clientes = clientService.getClient();
+        estadisticas.put("cantidadClientes", clientes.size());
+        estadisticas.put("promedioEdad", clientService.calcularPromedioEdad());
+        return ResponseEntity.ok(estadisticas);
     }
     
     @PostMapping("/guardar")

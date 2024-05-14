@@ -64,4 +64,12 @@ public class ClientService {
         .collect(Collectors.toList());
     }
 
+    public double calcularPromedioEdad() {
+        List<Client> clientes = getClient();
+        int totalEdad = clientes.stream()
+                .mapToInt(Client::getEdad)
+                .sum();
+        return (double) totalEdad / clientes.size();
+    }
+
 }
