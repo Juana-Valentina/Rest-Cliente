@@ -1,12 +1,7 @@
 package com.example.client.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.client.model.Client;
+import com.example.client.dto.ClientDTO;
 import com.example.client.service.ClientService;
 
 @RestController
@@ -39,74 +34,107 @@ public class ClientController {
 
     /** Obtiene una lista de todos los clientes. */
     @GetMapping("/listado")
-    public List<Client> obtenerTodosLosClientes() {
-        return clientService.getClient();
+    public List<ClientDTO> obtenerTodosLosClientes() {
+        try {
+            return clientService.obtenerTodosLosClientes();
+        } catch (Exception exception) {
+            throw new IllegalArgumentException("Error al obtener todos los clientes", exception);
+        }
     }
-    
+
     /** Obtiene una lista de clientes ordenados por nombre completo en orden ascendente. */
     @GetMapping("/listado-ordenado")
-    public ResponseEntity<List<Client>> obtenerTodosLosClientesOrdenados() {
-        List<Client> clientes = clientService.getClientesOrdenadosPorNombre();
-        return new ResponseEntity<>(clientes, HttpStatus.OK);
+    public List<ClientDTO> obtenerClientesOrdenadosAlfabeticamente() {
+        try {
+            return clientService.obtenerClientesOrdenadosAlfabeticamente();
+        } catch (Exception exception) {
+            throw new IllegalArgumentException("Error al obtener clientes ordenados alfabéticamente", exception);
+        }
     }
 
     /** Obtiene una lista de clientes ordenados por edad en orden ascendente. */
     @GetMapping("/listado-ordenado-por-edad")
-    public ResponseEntity<List<Client>> obtenerClientesOrdenadosPorEdad() {
-        List<Client> clientesOrdenadosPorEdad = clientService.obtenerClientesOrdenadosPorEdad();
-        return new ResponseEntity<>(clientesOrdenadosPorEdad, HttpStatus.OK);
+    public List<ClientDTO> obtenerClientesOrdenadosPorEdad() {
+        try {
+            return clientService.obtenerClientesOrdenadosPorEdad();
+        } catch (Exception exception) {
+            throw new IllegalArgumentException("Error al obtener clientes ordenados por edad", exception);
+        }
     }
 
     /** Obtiene estadísticas sobre los clientes, como la cantidad total y el promedio de edad. */
     @GetMapping("/Cantidad-promedio")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasClientes() {
-        Map<String, Object> estadisticas = new HashMap<>();
-        List<Client> clientes = clientService.getClient();
-        estadisticas.put("cantidadClientes", clientes.size());
-        estadisticas.put("promedioEdad", clientService.calcularPromedioEdad());
-        return ResponseEntity.ok(estadisticas);
+    public String obtenerCantidadPromedioClientes() {
+        try {
+            int cantidadClientes = clientService.contarClientes();
+            double promedioEdad = clientService.calcularPromedioEdadClientes();
+            return "Cantidad de clientes: " + cantidadClientes + ", Promedio de edad: " + promedioEdad;
+        } catch (Exception exception) {
+            throw new IllegalArgumentException("Error al obtener la cantidad y el promedio de edad de los clientes", exception);
+        }
     }
-    
+ 
     /** Crea un nuevo cliente con los datos proporcionados. */
     @PostMapping("/guardar")
-    public ResponseEntity<String> crearCliente(@RequestBody Client cliente) {
-        if (cliente != null) {
-            Client clienteGuardado = clientService.save(cliente);
-            if (clienteGuardado != null) {
-                return new ResponseEntity<>("Cliente creado exitosamente", HttpStatus.CREATED);
-            } else {
-                return new ResponseEntity<>("Error al guardar el cliente", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        } else {
-            return new ResponseEntity<>("El objeto cliente es nulo", HttpStatus.BAD_REQUEST);
+    public ClientDTO guardarCliente(@RequestBody ClientDTO clienteDTO) {
+        try {
+            return clientService.guardarCliente(clienteDTO);
+        } catch (Exception exception) {
+            throw new IllegalArgumentException("Error al guardar el cliente", exception);
         }
     }
 
     /** Actualiza un cliente existente con los datos proporcionados. */
     @PutMapping("/editar/{id}")
-    public ResponseEntity<String> actualizarCliente(@PathVariable Long id, @RequestBody Client clienteActualizado) {
-        Optional<Client> optionalClient = clientService.getById(id);
-        if (optionalClient.isPresent()) {
-            Client clientEncontrado = optionalClient.get();
-            clientEncontrado.setNombreCompleto(clienteActualizado.getNombreCompleto());
-            clientEncontrado.setDocumentoIdentidad(clienteActualizado.getDocumentoIdentidad());
-            clientEncontrado.setCorreoElectronico(clienteActualizado.getCorreoElectronico());
-            clientEncontrado.setFechaNacimiento(clienteActualizado.getFechaNacimiento());
-            clientEncontrado.setZonaHorariaLocal(clienteActualizado.getZonaHorariaLocal());
-
-            clientService.update(clientEncontrado);
-            return new ResponseEntity<>("Cliente actualizado exitosamente", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Cliente no encontrado", HttpStatus.NOT_FOUND);
+    public ClientDTO actualizarCliente(@PathVariable Long id, @RequestBody ClientDTO clientDTO) {
+        try {
+            clientDTO.setId(id);
+            return clientService.actualizarCliente(clientDTO);
+        } catch (Exception exception) {
+            throw new IllegalArgumentException("Error al actualizar el cliente", exception);
         }
     }
 
     /** Elimina un cliente por su ID. */
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> eliminarCliente(@PathVariable long id) {
-        clientService.delete(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Cliente eliminado correctamente");
-    } 
+    @DeleteMapping("/eliminar/{id}")
+    public void eliminarCliente(@PathVariable Long id) {
+        try {
+            clientService.eliminarCliente(id);
+        } catch (Exception exception) {
+            throw new IllegalArgumentException("Error al eliminar el cliente", exception);
+        }
+    }
 
-    
+    //otras formas:
+    // @GetMapping("/clientes")
+    // public List<ClientDTO> obtenerClientesPorNombre(@RequestParam String nombre) {
+    //     return clientService.obtenerClientesPorNombre(nombre);
+    // }
+
+    // @PostMapping("/clientes")
+    // public ClientDTO guardarCliente(@RequestBody ClientDTO clienteDTO) {
+    //     return clientService.guardarCliente(clienteDTO);
+    // }
+
+    // @GetMapping("/clientes/{id}")
+    // public ClientDTO obtenerClientePorId(@PathVariable Long id) {
+    //     return clientService.obtenerClientePorId(id);
+    // }
+
+    // @GetMapping("/clientes")
+    // public List<ClientDTO> obtenerClientesPorEdad(@RequestParam int edad) {
+    //     return clientService.obtenerClientesPorEdad(edad);
+    // }
+
+    // @GetMapping("/clientes")
+    // public List<ClientDTO> obtenerClientesPorFiltro(@RequestParam String nombre, @RequestParam int edad) {
+    //     return clientService.obtenerClientesPorFiltro(nombre, edad);
+    // }
+
+    // @PutMapping("/clientes/{id}")
+    // public ClientDTO actualizarCliente(@PathVariable Long id, @RequestBody ClienteDTO clienteDTO) {
+    //     clienteDTO.setId(id);
+    //     return clientService.actualizarCliente(clienteDTO);
+    // }
+
 }

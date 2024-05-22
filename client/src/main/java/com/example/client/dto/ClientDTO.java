@@ -1,29 +1,32 @@
 package com.example.client.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-// @Data
-// @NoArgsConstructor
-// @AllArgsConstructor
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter @Setter
 
 public class ClientDTO {
-    @Getter @Setter private String nombreCompleto;
-    @Getter @Setter private String documentoIdentidad;
-    @Getter @Setter private String correoElectronico;
-    @Getter @Setter private LocalDateTime fechaNacimiento;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    /** Constructor sin parámetros. Necesario para la deserialización. */
-    public ClientDTO() {}
+    private long id;
+    private String nombreCompleto;
+    private long documentoIdentidad;
+    private String correoElectronico;
+    private LocalDate fechaNacimiento;
+    private int edad;
+    private String zonaHorariaLocal;
 
-    /** Constructor con parámetros para inicializar el DTO con todos sus atributos. */
-    public ClientDTO(String nombreCompleto, String documentoIdentidad, String correoElectronico, LocalDateTime fechaNacimiento) {
-        this.nombreCompleto = nombreCompleto;
-        this.documentoIdentidad = documentoIdentidad;
-        this.correoElectronico = correoElectronico;
-        this.fechaNacimiento = fechaNacimiento;
-    }
 }
 
